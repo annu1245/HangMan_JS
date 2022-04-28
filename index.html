@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+    <title>Document</title>
+
+    <style>
+       
+
+.main {
+    /* text-align: center; */
+}
+
+.line {
+  border-bottom: 3px solid red;
+  margin : 0.7rem;
+  padding: 0 2.5rem;
+  border: 5px solid red;
+}
+
+.letter{
+    margin: 0.5rem;
+    padding: 0 2rem;
+    font-size: 3rem;
+    font-weight: 900;
+
+}
+
+.line, .letter{
+    display: inline-flex;
+}
+
+.grid-container {
+  display: grid;
+  gap: 10px 10px;
+  /* grid-template-columns: auto auto auto; */
+  grid-template-columns: repeat(8, 80px);
+  background-image: linear-gradient( 68.3deg,  rgba(245,177,97,1) 0.4%, rgba(236,54,110,1) 100.2% );
+  padding: 15px;
+}
+
+.grid-item {
+  background-color: rgba(244, 228, 90, 0.974);
+  border: 1px solid rgba(221, 5, 5, 0.8);
+  color:#c61a2ed6;
+  padding: 12px;
+  font-size: 1.8rem;
+  /* text-align: center; */
+}
+
+.main_grid{
+    margin-top: 100px;
+    display: flex;
+    /* justify-content: center; */
+}
+
+
+h1{
+  margin: 50px;
+  text-align: center;
+  
+}
+
+
+canvas { border: 1px solid black; }
+       
+    </style>
+</head>
+<body>
+
+  <h1>HangMan Game</h1>
+
+   <div class = " container-fluid row gx-5">
+    <div class = "col-md-4 left">
+        <canvas id="can" width="500" height="500"></canvas>
+    </div>
+    <div class = "col-md-8 right">
+        <div class = "main">
+           <div class = "letter_div"></div>
+           <div class = "line_div"></div>
+        </div>
+   
+        <div class = "main_grid">
+           <div class="grid-container"></div>
+        </div>
+    </div>
+   </div>
+
+  
+         
+  
+<button id = "draw">Draw</button>
+
+</body>
+
+<script>
+
+var btn = document.getElementsByClassName('grid-item');
+document.getElementById('draw').addEventListener('click', hangManBody);
+var step = 0;
+var val = "HELLLO";
+len = val.length;
+const random = Math.floor(Math.random() * alphabet.length);
+
+
+
+var alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O',
+                'P','Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+
+
+// ------ append alphabet -----------//
+for(var i = 0; i < alphabet.length; i++){
+  var alpha = $('<button class = "grid-item"> ' + alphabet[i] + '</button>');
+  $('.grid-container').append(alpha);
+}
+
+for(let i = 0; i < btn.length; i++) {
+  btn[i].addEventListener("click", function() {
+    btnVal = btn[i].innerHTML;
+    show(btnVal, i);
+  })
+}
+
+// ------- guess word section ----------- //   
+
+
+for(var i = 0; i < len; i++){
+    var s = $('<div class = "line"> </div>');
+    $('.line_div').append(s); 
+    txt = val.split("");
+    var l = $('<div class = "letter">'+ txt[i]+ '</div>');
+    $('.letter_div').append(l); 
+    [].forEach.call(document.querySelectorAll('.letter'), function (el) {
+    el.style.visibility = 'hidden';
+    });
+
+}
+
+
+
+///// --------  show matching letter ------ //////
+
+
+function show(al, i){
+
+console.log(random);
+ 
+  var hidden_letter =  $('.letter_div').text();
+   al = al.trim();
+   var result;
+
+   if (hidden_letter.match(al)){
+    var regex = new RegExp(al, "gi");
+    while ( (result = regex.exec(hidden_letter)) ) {
+      document.getElementsByClassName('letter')[result.index].style.visibility = 'visible';
+      document.getElementsByClassName('grid-item')[i].style.backgroundColor = '#259d00c5';
+    }
+  }
+
+  else {
+    console.log("yes", i)
+    document.getElementsByClassName('grid-item')[i].style.backgroundColor = 'white';
+    document.getElementsByClassName('grid-item')[i].style.color = 'yellow';
+    hangManBody(draws[step++])
+
+    if(undefined === draws[step]){
+      alert("Game Over");
+    }
+
+  }
+  
+}
+
+
+
+//--------- canvas ----------//
+
+const draws = ['base', 'verticalLine', 'hangrope1', 'hangrope2', 'head', 'body',
+                      'leftHand', 'rightHand', 'leftLegs', 'rightLegs'];
+
+var canvas = document.getElementById("can");
+var ctx = canvas.getContext('2d');
+ctx.lineWidth = "5";
+
+
+
+
+function hangManBody (part) {
+switch(part){
+  case 'base' :
+    ctx.moveTo(100,400);
+    ctx.lineTo(400, 400);
+    ctx.stroke();
+    break;
+
+  case 'verticalLine' :
+    ctx.moveTo(120,400);
+    ctx.lineTo(120,100);
+    ctx.stroke();
+    break;
+
+  case 'hangrope1':
+    ctx.moveTo(120,100);
+    ctx.lineTo(220,100);
+    ctx.stroke();
+    break;
+
+  case 'hangrope2':
+    ctx.moveTo(220,100);
+    ctx.lineTo(220, 150);
+    ctx.stroke();
+    break;
+
+  case 'head':
+    ctx.arc(210, 190, 40, 0, Math.PI*2, true);
+    ctx.stroke();
+    break;
+
+  case 'body':
+   ctx.moveTo(210,230);
+   ctx.lineTo(210, 300);
+   ctx.stroke();
+   break;
+
+   case 'leftHand':
+   ctx.moveTo(210, 230);
+    ctx.lineTo(160, 260);
+    ctx.stroke();
+    break;
+
+  case 'rightHand':
+    ctx.moveTo(210,230);
+    ctx.lineTo(260, 260)
+    ctx.stroke();
+    break;
+
+  case 'leftLegs':
+    ctx.moveTo(210, 300);
+    ctx.lineTo(160, 360);
+    ctx.stroke();
+    break;
+
+  case 'rightLegs':
+    ctx.moveTo(210, 300);
+    ctx.lineTo(260, 360);
+    ctx.stroke();
+    break;
+}
+}
+
+
+
+
+
+</script>
+
+</html>
